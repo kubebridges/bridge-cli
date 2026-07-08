@@ -1,0 +1,90 @@
+name: Release CLI
+
+# Triggered by CLI version tags such as `cli-v0.1.0`. The tag suffix after
+# `cli-v` is the package version and must match `<Version>` in src/Cli.fsproj.
+# Publishes BridgeMCP.Cli to NuGet.org and attaches self-contained single-file
+# binaries (linux-x64, win-x64, osx-arm64) to the GitHub release.
+on:
+  push:
+    tags:
+      - 'cli-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Pack, publish, and release
+    if: github.repository == 'kubebridges/bridge-cli'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Derive version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#cli-v}"
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$'; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not yield a valid semver version (got '$VERSION'). Expected a tag like cli-v1.2.3."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing CLI version $VERSION from tag $GITHUB_REF_NAME"
+
+      - name: Run tests
+        run: dotnet test BridgeMCP.Cli.slnx -c Release
+
+      - name: Pack the tool
+        run: >-
+          dotnet pack src/Cli.fsproj -c Release
+          -p:Version="$VERSION"
+          -o artifacts/nuget
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Push to NuGet.org
+        run: >-
+          dotnet nuget push "artifacts/nuget/*.nupkg"
+          --api-key "$NUGET_API_KEY"
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Publish self-contained binaries
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p artifacts/release
+          for rid in linux-x64 win-x64 osx-arm64; do
+            echo "Publishing $rid"
+            dotnet publish src/Cli.fsproj -c Release -r "$rid" \
+              -p:SelfContainedRelease=true \
+              -p:Version="$VERSION" \
+              -o "publish/$rid"
+            if [ "$rid" = "win-x64" ]; then
+              cp "publish/$rid/bridgemcp.exe" "artifacts/release/bridgemcp-$VERSION-$rid.exe"
+              (cd "artifacts/release" && zip -j "bridgemcp-$VERSION-$rid.zip" "bridgemcp-$VERSION-$rid.exe" && rm "bridgemcp-$VERSION-$rid.exe")
+            else
+              cp "publish/$rid/bridgemcp" "artifacts/release/bridgemcp-$VERSION-$rid"
+              tar -czf "artifacts/release/bridgemcp-$VERSION-$rid.tar.gz" -C "artifacts/release" "bridgemcp-$VERSION-$rid"
+              rm "artifacts/release/bridgemcp-$VERSION-$rid"
+            fi
+          done
+          ls -la artifacts/release
+
+      - name: Create GitHub release and attach assets
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          artifacts/release/*
+          --title "BridgeMCP CLI $VERSION"
+          --generate-notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageReference Include="FsUnit.xUnit" Version="6.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../src/Cli.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConfigTests.fs" />
+    <Compile Include="ParserTests.fs" />
+    <Compile Include="ApiClientTests.fs" />
+    <Compile Include="OutputTests.fs" />
+    <Compile Include="LoginTests.fs" />
+    <Compile Include="CommandTests.fs" />
+  </ItemGroup>
+</Project>

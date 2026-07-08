@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>bridgemcp</AssemblyName>
+    <RootNamespace>Server.Cli</RootNamespace>
+
+    <!-- Packaging: dotnet tool named `bridgemcp` -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>bridgemcp</ToolCommandName>
+    <PackageId>BridgeMCP.Cli</PackageId>
+    <!-- Default in-repo version; CI overrides it from the release tag with
+         `-p:Version=<from-tag>` (the `cli-v*` tag suffix must match this value
+         on a real release, e.g. tag `cli-v0.1.0` -> Version 0.1.0). -->
+    <Version>0.1.0</Version>
+    <Authors>KubeBridges</Authors>
+    <Description>BridgeMCP command-line tool for agent deployment and endpoint status.</Description>
+
+    <!-- Public NuGet listing metadata -->
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/kubebridges/bridge-cli</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kubebridges/bridge-cli</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>mcp;bridgemcp;cli;dotnet-tool;model-context-protocol;agents</PackageTags>
+
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!-- Self-contained single-file publish for GitHub-release binaries.
+       Kept off the default build so `dotnet pack` produces a framework-dependent
+       tool; opt in with `dotnet publish -p:SelfContainedRelease=true -r <rid>`
+       or the bundled Properties/PublishProfiles/selfcontained.pubxml. -->
+  <PropertyGroup Condition="'$(SelfContainedRelease)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Ship the CLI-scoped readme as the package README.md (NuGet root). -->
+    <None Include="PackageReadme.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="6.2.5" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.18.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config.fs" />
+    <Compile Include="Pkce.fs" />
+    <Compile Include="ApiClient.fs" />
+    <Compile Include="Output.fs" />
+    <Compile Include="Cli.fs" />
+    <Compile Include="Login.fs" />
+    <Compile Include="Commands.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>
