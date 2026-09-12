@@ -28,7 +28,7 @@ type CliError =
 // Config file model
 // ──────────────────────────────────────────────────────────────
 
-let defaultUrl = "https://bridgemcp.net"
+let defaultUrl = "https://bridgemcp.io"
 
 let envUrlVar = "BRIDGEMCP_URL"
 let envTokenVar = "BRIDGEMCP_TOKEN"
