@@ -16,7 +16,7 @@ type LoginArgs =
     interface IArgParserTemplate with
         member this.Usage =
             match this with
-            | Url _ -> "BridgeMCP instance URL (default https://bridgemcp.net)."
+            | Url _ -> "BridgeMCP instance URL (default https://bridgemcp.io)."
 
 [<CliPrefix(CliPrefix.DoubleDash)>]
 type StatusArgs =

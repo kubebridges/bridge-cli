@@ -28,13 +28,13 @@ let ``login parses with url flag`` () =
             [
                 "login"
                 "--url"
-                "https://dev.bridgemcp.net"
+                "https://dev.bridgemcp.io"
             ]
 
     match r.TryGetSubCommand() with
     | Some(Login loginArgs) ->
         loginArgs.TryGetResult LoginArgs.Url
-        |> should equal (Some "https://dev.bridgemcp.net")
+        |> should equal (Some "https://dev.bridgemcp.io")
     | other -> failwith $"expected Login, got {other}"
 
 [<Fact>]

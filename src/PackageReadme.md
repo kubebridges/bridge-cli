@@ -1,6 +1,6 @@
 # BridgeMCP.Cli
 
-The `bridgemcp` command-line tool for [BridgeMCP](https://bridgemcp.net), a self-hosted MCP aggregation gateway. It drives agent deployment and endpoint status from the command line, authenticating against your BridgeMCP instance through a browser-based OAuth authorization-code flow with PKCE.
+The `bridgemcp` command-line tool for [BridgeMCP](https://bridgemcp.io), a self-hosted MCP aggregation gateway. It drives agent deployment and endpoint status from the command line, authenticating against your BridgeMCP instance through a browser-based OAuth authorization-code flow with PKCE.
 
 ## Install
 
@@ -12,7 +12,7 @@ dotnet tool install --global BridgeMCP.Cli
 
 The command is exposed as `bridgemcp`. Update with `dotnet tool update --global BridgeMCP.Cli`.
 
-Self-contained, single-file binaries (no .NET runtime required) are attached to each GitHub release; see the [CLI docs](https://bridgemcp.net/docs/cli) for install-script one-liners.
+Self-contained, single-file binaries (no .NET runtime required) are attached to each GitHub release; see the [CLI docs](https://bridgemcp.io/docs/cli) for install-script one-liners.
 
 ## Usage
 
@@ -24,7 +24,7 @@ bridgemcp agents deploy <agent-name-or-id> <package.zip>
 bridgemcp logout                # clear the stored token and revoke it server-side
 ```
 
-Read commands accept `--json` for machine-readable output. See the [full CLI documentation](https://bridgemcp.net/docs/cli) for configuration and authentication details.
+Read commands accept `--json` for machine-readable output. See the [full CLI documentation](https://bridgemcp.io/docs/cli) for configuration and authentication details.
 
 ## License
 
